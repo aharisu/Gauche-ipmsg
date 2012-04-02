@@ -73,6 +73,7 @@
        . args)
       (if (and message (not (null? send-target)))
         (send-message user host message send-target)
-        (usage)))))
+        (usage))))
+  0)
 
 
