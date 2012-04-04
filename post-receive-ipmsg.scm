@@ -86,6 +86,8 @@
           (newline out)
           (output (cdr c))]))))
 
+(define (get-branch refs) (process-output->string #`"git rev-parse --abbrev-ref ,refs"))
+
 (define (get-commit-message)
   (let* ([git-dir (process-output->string "git rev-parse --git-dir")]
          [description (get-description (call-with-input-file 
@@ -96,6 +98,7 @@
                           (string-append "git show --no-color " (cadr args)))])
 #`"Author: ,(get-date show-msg-list)
 Date: ,(get-author show-msg-list)
+Branch: ,(get-branch (caddr args))
 Description: ,description
 ,(get-message show-msg-list)"))
 
