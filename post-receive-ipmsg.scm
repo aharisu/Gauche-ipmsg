@@ -68,9 +68,23 @@
       show-list)
     "\n"))
 
+(define (skip c pred)
+  (cond
+    [(null? c) c]
+    [(pred (car c)) c]
+    [else (skip (cdr c) pred)]))
+
 (define (get-date show-msg-list) (get-tag show-msg-list #/Author:\s+(\S+)\s+.*$/))
 (define (get-author show-msg-list) (get-tag show-msg-list #/Date:\s+(.*)$/))
-(define (get-message show-msg-list) (get-tag show-msg-list #/    (.*)$/))
+(define (get-message show-msg-list) 
+  (let1 out (open-output-string)
+    (let output ([c (cdr (skip show-msg-list string-null?))])
+      (cond
+        [(or (null? c) (string-null? (car c))) (get-output-string out)]
+        [else 
+          (display (substring (car c) 4 (string-length (car c))) out)
+          (newline out)
+          (output (cdr c))]))))
 
 (define (get-commit-message)
   (let* ([git-dir (process-output->string "git rev-parse --git-dir")]
